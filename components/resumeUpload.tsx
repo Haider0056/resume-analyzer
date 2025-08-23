@@ -67,8 +67,8 @@ export default function ResumeUploader() {
 
         // Extract text from each item
         const pageText = textContent.items
-          .filter((item: any) => "str" in item)
-          .map((item: any) => item.str)
+          .filter((item) => "str" in item)
+          .map((item) => (item as { str: string }).str)
           .join(" ");
 
         fullText += `${pageText}\n\n`;
