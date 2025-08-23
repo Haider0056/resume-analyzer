@@ -5,23 +5,13 @@ import * as pdfjs from "pdfjs-dist";
 import { chatWithLangbase } from "@/utils/langbase";
 import * as diff from "diff";
 
-// We need to configure the worker differently in Next.js
-// This avoids the dynamic import issues
+// Configure PDF.js worker for client-side only
 const pdfjsWorker = () => {
   if (typeof window === "undefined") {
-    return null; // Return null on server side
+    return null;
   }
 
-  // Import the worker as a separate chunk
-  import("pdfjs-dist/build/pdf.worker.entry");
-
-  // Set the worker globally
-  if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      "pdfjs-dist/build/pdf.worker.entry",
-      import.meta.url
-    ).toString();
-  }
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 };
 
 export default function ResumeUploader() {
@@ -235,7 +225,7 @@ export default function ResumeUploader() {
 
   const renderDiffView = () => {
     return (
-      <div className="whitespace-pre-wrap font-mono text-sm">
+      <div className="whitespace-pre-wrap font-mono text-sm text-black">
         {diffResult.map((part, index) => {
           // Display added text in green with yellow highlight
           if (part.added) {
@@ -254,7 +244,7 @@ export default function ResumeUploader() {
             );
           }
           // Display unchanged text normally
-          return <span key={index}>{part.value}</span>;
+          return <span key={index} className="text-black">{part.value}</span>;
         })}
       </div>
     );
@@ -284,7 +274,7 @@ export default function ResumeUploader() {
     } else if (viewMode === "optimized" && optimizedResume) {
       return (
         <div className="p-6 w-full h-96 overflow-auto bg-white">
-          <div className="whitespace-pre-wrap font-mono text-sm">
+          <div className="whitespace-pre-wrap font-mono text-sm text-black">
             {formatResumeForDisplay(optimizedResume)}
           </div>
         </div>
